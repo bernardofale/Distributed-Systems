@@ -6,26 +6,35 @@ import entities.OrdinaryThief;
 import genclass.GenericIO;
 import main.Simul_Par;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class OrdinaryThievesCS {
 
     private OrdinaryThief[] thieves;
 
+    Set<OrdinaryThief> uniqueOTs;
     private int n_available_thieves;
 
     public OrdinaryThievesCS(){
         thieves = new OrdinaryThief[Simul_Par.M - 1];
         for (int i = 0; i < Simul_Par.M - 1; i++)
             thieves[i] = null;
-
+        uniqueOTs = new HashSet<OrdinaryThief>(Simul_Par.M - 1);
     }
 
     public OrdinaryThief[] getThieves() {
         return thieves;
     }
 
+    public Set<OrdinaryThief> getUniqueOTs() {
+        return uniqueOTs;
+    }
 
     public synchronized boolean amINeeded(){
         OrdinaryThief ot = ((OrdinaryThief) Thread.currentThread());
+        uniqueOTs.add(ot);
         int thief_id = ot.getOT_id();
         if(ot.isInAction()){
             n_available_thieves++;

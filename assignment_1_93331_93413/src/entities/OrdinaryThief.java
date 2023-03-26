@@ -1,12 +1,8 @@
 package entities;
 
-import comm_infra.MemException;
 import genclass.GenericIO;
 import main.Simul_Par;
-import shared_regions.AssaultParty;
-import shared_regions.MasterThiefCCS;
-import shared_regions.Museum;
-import shared_regions.OrdinaryThievesCS;
+import shared_regions.*;
 
 public class OrdinaryThief extends Thread{
 
@@ -15,21 +11,21 @@ public class OrdinaryThief extends Thread{
 
     private OrdinaryThievesStates OT_state;
 
-    private final AssaultParty ap0;
+    private AssaultParty ap0;
 
-    private final AssaultParty ap1;
+    private AssaultParty ap1;
 
     private AssaultParty my_ap;
 
     private OrdinaryThievesCS c_site;
 
-    private final MasterThiefCCS cc_site;
+    private MasterThiefCCS cc_site;
 
     private boolean isHoldingCanvas;
 
-    private final int MDj;
+    private int MDj;
 
-    private final Museum museum;
+    private Museum museum;
 
     private boolean isOver;
 
@@ -39,7 +35,10 @@ public class OrdinaryThief extends Thread{
 
     private boolean isNeeded;
 
-    public OrdinaryThief(String name, int id, OrdinaryThievesCS c_site, MasterThiefCCS cc_site, AssaultParty ap0, AssaultParty ap1, Museum museum) {
+    private boolean inParty;
+    private GeneralRepo GP;
+
+    public OrdinaryThief(String name, int id, OrdinaryThievesCS c_site, MasterThiefCCS cc_site, AssaultParty ap0, AssaultParty ap1, Museum museum, GeneralRepo GP) {
         super(name);
         this.OT_id = id;
         this.c_site = c_site;
@@ -55,6 +54,8 @@ public class OrdinaryThief extends Thread{
         inAction = true;
         isNeeded = false;
         readyToLeave = false;
+        this.GP = GP;
+        inParty = false;
     }
 
     public void setReadyToLeave(boolean readyToLeave) {
@@ -129,40 +130,56 @@ public class OrdinaryThief extends Thread{
         return isHoldingCanvas;
     }
 
+    public boolean isInParty() {
+        return inParty;
+    }
+
+    public void setInParty(boolean inParty) {
+        this.inParty = inParty;
+    }
+
+
     @Override
     public void run () {
         while (!isOver()){
             switch(getOT_state()){
                 case CONCENTRATION_SITE :
-                        readyToLeave = false;
-                        boolean needed = c_site.amINeeded();
-                        if(!needed){
-                            GenericIO.writeString("Heist is over. \n");
-                            setOver(true);
-                            break;
-                        }
-                        my_ap = cc_site.prepareExcursion();
+                    GP.setOT_states(getOT_id(), OrdinaryThievesStates.CONCENTRATION_SITE);
+                    setInParty(false);
+                    boolean needed = c_site.amINeeded();
+                    if(!needed){
+                        GenericIO.writeString("Heist is over. \n");
+                        setOver(true);
+                        break;
+                    }
+                    my_ap = cc_site.prepareExcursion();
 
                 case CRAWLING_INWARDS:
+                    GP.setOT_states(getOT_id(), OrdinaryThievesStates.CRAWLING_INWARDS);
                     my_ap.crawlIn();
                     if(getPosition() == my_ap.getDistance()){
                         my_ap.next();
+                        setOT_state(OrdinaryThievesStates.AT_A_ROOM);
                         GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in a room!\n");
                     }
                     break;
                 case AT_A_ROOM:
+                    GP.setOT_states(getOT_id(), OrdinaryThievesStates.AT_A_ROOM);
                     isHoldingCanvas = museum.rollACanvas();
                     my_ap.reverseDirection();
                     break;
                 case CRAWLING_OUTWARDS:
+                    GP.setOT_states(getOT_id(), OrdinaryThievesStates.CRAWLING_OUTWARDS);
                     my_ap.crawlOut();
                     if(getPosition() == my_ap.getDistance()){
                         my_ap.next();
+                        setOT_state(OrdinaryThievesStates.COLLECTION_SITE);
                         GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in concentration site!\n");
                     }
 
                     break;
                 case COLLECTION_SITE:
+                    GP.setOT_states(getOT_id(), OrdinaryThievesStates.COLLECTION_SITE);
                     cc_site.handACanvas();
                     isHoldingCanvas = false;
                     setOT_state(OrdinaryThievesStates.CONCENTRATION_SITE);

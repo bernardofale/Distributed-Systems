@@ -7,10 +7,7 @@ package main;
 import comm_infra.MemException;
 import entities.MasterThief;
 import entities.OrdinaryThief;
-import shared_regions.AssaultParty;
-import shared_regions.MasterThiefCCS;
-import shared_regions.Museum;
-import shared_regions.OrdinaryThievesCS;
+import shared_regions.*;
 
 public class Heist {
     public static void main(String[] args) throws MemException {
@@ -21,11 +18,13 @@ public class Heist {
         Museum museum = new Museum();
         OrdinaryThievesCS c_site = new OrdinaryThievesCS();
         OrdinaryThief[] thieves = new OrdinaryThief[Simul_Par.M - 1];
-        MasterThief mt = new MasterThief("Master", 1, cc_site, c_site, ap0, ap1, museum);
+        GeneralRepo gp = new GeneralRepo(ap0, ap1, cc_site, c_site, museum);
+        MasterThief mt = new MasterThief("Master", 1, cc_site, c_site, ap0, ap1, museum, gp);
         mt.start();
         for (int i = 0; i < Simul_Par.M - 1; i++) {
-            thieves[i] = new OrdinaryThief("Thief", i, c_site, cc_site, ap0, ap1, museum);
+            thieves[i] = new OrdinaryThief("Thief", i, c_site, cc_site, ap0, ap1, museum, gp);
             thieves[i].start();
         }
+
     }
 }

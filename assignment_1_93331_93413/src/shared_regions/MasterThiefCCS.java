@@ -27,6 +27,10 @@ public class MasterThiefCCS {
 
     }
 
+    public int getCollected_canvas() {
+        return collected_canvas;
+    }
+
     public synchronized void startOperations(){
         System.out.println("Starting operations...");
         ((MasterThief)Thread.currentThread()).setMT_state(MasterThiefStates.DECIDING_WHAT_TO_DO);
@@ -64,6 +68,7 @@ public class MasterThiefCCS {
             notifyAll();
         }
 
+        ot.setInParty(true);
         while(!sendAP){
             try {
                 wait();

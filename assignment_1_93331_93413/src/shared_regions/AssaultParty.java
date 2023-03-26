@@ -139,7 +139,6 @@ public class AssaultParty {
                 e.printStackTrace();
             }
         }
-        notifyAll();
     }
 
     public synchronized boolean inRoom() {
@@ -152,7 +151,6 @@ public class AssaultParty {
     }
     public synchronized void reverseDirection(){
         OrdinaryThief ot = (OrdinaryThief) Thread.currentThread();
-        ot.setOT_state(OrdinaryThievesStates.CRAWLING_OUTWARDS);
         ot.setReadyToLeave(true);
         while(!allReady()){
             try {
@@ -162,6 +160,7 @@ public class AssaultParty {
             }
         }
         GenericIO.writeString("Reversing direction!\n");
+        ot.setOT_state(OrdinaryThievesStates.CRAWLING_OUTWARDS);
         ot.setPosition(0);
         next_inLine = Simul_Par.K - 1;
 
