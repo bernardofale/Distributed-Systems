@@ -1,6 +1,7 @@
 package shared_regions;
 
 import comm_infra.Room;
+import comm_infra.ThiefLog;
 import entities.MasterThiefStates;
 import entities.OrdinaryThief;
 import entities.OrdinaryThievesStates;
@@ -12,7 +13,7 @@ import java.util.Objects;
 
 public class GeneralRepo {
     private MasterThiefStates MT_state;
-    private OrdinaryThievesStates[] OT_states;
+    private ThiefLog[]  otLog;
     private static String FILENAME;
     private String legend;
 
@@ -27,9 +28,9 @@ public class GeneralRepo {
         if ((FILENAME == null) || Objects.equals (FILENAME, ""))
             this.FILENAME = "logger";
         MT_state = MasterThiefStates.PLANNING_THE_HEIST;
-        OT_states = new OrdinaryThievesStates[Simul_Par.M - 1];
+        otLog = new ThiefLog[Simul_Par.M - 1];
         for (int i = 0; i < Simul_Par.M - 1; i++) {
-            OT_states[i] = OrdinaryThievesStates.CONCENTRATION_SITE;
+            otLog[i] = new ThiefLog(i);
         }
         this.ap0 = ap0;
         this.ap1 = ap1;
@@ -46,7 +47,19 @@ public class GeneralRepo {
     }
 
     public synchronized void setOT_states(int id, OrdinaryThievesStates state) {
-        this.OT_states[id] = state;
+        this.otLog[id].setState(state);
+        for (OrdinaryThief o : cs.getUniqueOTs()) {
+            if(o.getOT_id() == id){
+                this.otLog[id].setPos(o.getPosition());
+                if(o.isHoldingCanvas()){
+                    this.otLog[id].setHoldingCanvas(1);
+                }else{
+                    this.otLog[id].setHoldingCanvas(0);
+                }
+                this.otLog[id].setInParty(o.isInParty());
+                this.otLog[id].setMdj(o.getMDj());
+            }
+        }
         reportStatus();
     }
 
@@ -71,7 +84,6 @@ public class GeneralRepo {
         reportStatus();
     }
     private void reportStatus () {
-        if (cs.getUniqueOTs().size() == Simul_Par.M - 1) {
             TextFile log = new TextFile();                      // instantiation of a text file handler
             String lineStatus = "";                              // state line to be printed
             String second_line = "";
@@ -99,7 +111,7 @@ public class GeneralRepo {
             }
 
             for (int i = 0; i < Simul_Par.M - 1; i++) {
-                switch (OT_states[i]) {
+                switch (otLog[i].getState()) {
                     case CONCENTRATION_SITE:
                         lineStatus += " C_SITE ";
                         break;
@@ -117,17 +129,12 @@ public class GeneralRepo {
                         break;
                 }
 
-
-                for (OrdinaryThief ot : cs.getUniqueOTs()) {
-                    if (ot.getOT_id() == i) {
-                        if (ot.isInParty()) {
-                            lineStatus += " 'P' ";
-                        } else {
-                            lineStatus += " 'W' ";
-                        }
-                        lineStatus += " " + ot.getMDj() + " ";
-                    }
+                if(otLog[i].isInParty()){
+                    lineStatus += " 'P' ";
+                }else{
+                    lineStatus += " 'W' ";
                 }
+                lineStatus += " " + otLog[i].getMdj() + " ";
             }
             second_line += " " + ap0.getRoom_assigned() + " ";
             for (OrdinaryThief ot : ap0.getAP()) {
@@ -158,7 +165,6 @@ public class GeneralRepo {
                 GenericIO.writelnString("The operation of closing the file " + FILENAME + " failed!");
                 System.exit(1);
             }
-        }
     }
     public void printSumUp()
     {
