@@ -1,2 +1,4 @@
-package serverSide.sharedRegions;public class OrdinaryThievesCSInterface {
+package serverSide.sharedRegions;
+
+public class OrdinaryThievesCSInterface {
 }

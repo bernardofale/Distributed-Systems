@@ -1,2 +1,4 @@
-package serverSide.entities;public class MuseumProxy {
+package serverSide.entities;
+
+public class MuseumProxy {
 }

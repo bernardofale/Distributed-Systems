@@ -1,2 +1,4 @@
-package serverSide.main;public class ServerOrdinaryThievesCS {
+package serverSide.main;
+
+public class ServerOrdinaryThievesCS {
 }

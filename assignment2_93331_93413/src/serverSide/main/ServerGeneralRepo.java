@@ -1,2 +1,4 @@
-package serverSide.main;public class ServerGeneralRepo {
+package serverSide.main;
+
+public class ServerGeneralRepo {
 }

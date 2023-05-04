@@ -1,2 +1,4 @@
-package serverSide.sharedRegions;public class GeneralRepoInterface {
+package serverSide.sharedRegions;
+
+public class GeneralRepoInterface {
 }

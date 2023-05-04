@@ -1,2 +1,4 @@
-package serverSide.main;public class ServerMuseum {
+package serverSide.main;
+
+public class ServerMuseum {
 }

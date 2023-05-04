@@ -1,2 +1,4 @@
-package serverSide.entities;public class AssaultPartyProxy {
+package serverSide.entities;
+
+public class AssaultPartyProxy {
 }

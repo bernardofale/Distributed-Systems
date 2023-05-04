@@ -1,2 +1,4 @@
-package serverSide.entities;public class GeneralRepoProxy {
+package serverSide.entities;
+
+public class GeneralRepoProxy {
 }

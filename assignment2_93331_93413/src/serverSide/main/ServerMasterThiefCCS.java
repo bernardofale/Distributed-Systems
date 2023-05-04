@@ -1,2 +1,4 @@
-package serverSide.main;public class ServerMasterThiefCCS {
+package serverSide.main;
+
+public class ServerMasterThiefCCS {
 }

@@ -1,2 +1,4 @@
-package serverSide.entities;public class MasterThiefCCSProxy {
+package serverSide.entities;
+
+public class MasterThiefCCSProxy {
 }

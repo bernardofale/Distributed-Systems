@@ -1,2 +1,4 @@
-package serverSide.sharedRegions;public class MasterThiefCCSInterface {
+package serverSide.sharedRegions;
+
+public class MasterThiefCCSInterface {
 }

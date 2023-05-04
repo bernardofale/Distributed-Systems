@@ -1,2 +1,4 @@
-package serverSide.sharedRegions;public class MuseumInterface {
+package serverSide.sharedRegions;
+
+public class MuseumInterface {
 }

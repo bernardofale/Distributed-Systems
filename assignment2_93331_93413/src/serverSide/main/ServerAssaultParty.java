@@ -1,2 +1,4 @@
-package serverSide.main;public class ServerAssaultParty {
+package serverSide.main;
+
+public class ServerAssaultParty {
 }

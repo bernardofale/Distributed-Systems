@@ -1,2 +1,4 @@
-package serverSide.entities;public class OrdinaryThievesProxy {
+package serverSide.entities;
+
+public class OrdinaryThievesProxy {
 }

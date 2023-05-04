@@ -1,2 +1,4 @@
-package serverSide.sharedRegions;public class AssaultPartyInterface {
+package serverSide.sharedRegions;
+
+public class AssaultPartyInterface {
 }
