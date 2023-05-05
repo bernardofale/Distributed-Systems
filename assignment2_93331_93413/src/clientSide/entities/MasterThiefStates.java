@@ -1,4 +1,4 @@
-package entities;
+package clientSide.entities;
 
 public enum MasterThiefStates {
     PLANNING_THE_HEIST,

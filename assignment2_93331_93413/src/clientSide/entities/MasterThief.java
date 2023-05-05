@@ -1,9 +1,9 @@
-package entities;
+package clientSide.entities;
 
 import comm_infra.Room;
 import genclass.GenericIO;
-import main.Simul_Par;
-import shared_regions.*;
+import serverSide.main.*;
+import clientSide.stubs.*;
 
 import java.util.ArrayList;
 
@@ -14,35 +14,32 @@ public class MasterThief extends Thread{
 
     private MasterThiefStates MT_state;
 
-    private final MasterThiefCCS cc_site;
+    private final MasterThiefCCSStub cc_site;
 
-    private final OrdinaryThievesCS c_site;
+    private final OrdinaryThiefCSStub c_site;
 
-    private final Museum museum;
+    private final MuseumStub museum;
 
     private boolean isOver;
 
-    private final AssaultParty[] parties;
+    private final AssaultPartyStub[] parties;
 
-    private final int id;
-
-    private GeneralRepo gp;
+    private GeneralRepoStub gp;
 
     /**
      * Creates a master thief object and initializes variables and flags needed for the operation of the thread
      */
-    public MasterThief(String name, int id, MasterThiefCCS cc_site, OrdinaryThievesCS c_site, AssaultParty[] parties, Museum museum, GeneralRepo gp){
+    public MasterThief(String name, int id, MasterThiefCCSStub cc_site, OrdinaryThiefCSStub c_site, AssaultPartyStub[] parties, MuseumStub museum, GeneralRepoStub gp){
         super(name);
         this.cc_site = cc_site;
         this.c_site = c_site;
         this.MT_state = MasterThiefStates.PLANNING_THE_HEIST;
         this.museum = museum;
         isOver = false;
-        this.parties = new AssaultParty[Simul_Par.N_Parties];
+        this.parties = new AssaultPartyStub[Simul_Par.N_Parties];
         for (int i = 0; i < Simul_Par.N_Parties; i++) {
             this.parties[i] = parties[i];
         }
-        this.id = id;
         this.gp = gp;
     }
 

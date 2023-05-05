@@ -1,15 +1,11 @@
-package shared_regions;
+package serverSide.sharedRegions;
 
-import comm_infra.AssaultPartyLog;
-import comm_infra.MuseumLog;
-import comm_infra.ThiefLog;
-import entities.MasterThiefStates;
-import entities.OrdinaryThievesStates;
-import genclass.GenericIO;
-import genclass.TextFile;
-import main.Simul_Par;
-
+import clientSide.entities.*;
+import comm_infra.*;
+import serverSide.main.*;
+import genclass.*;
 import java.util.Objects;
+
 
 public class GeneralRepo {
     private MasterThiefStates MT_state;

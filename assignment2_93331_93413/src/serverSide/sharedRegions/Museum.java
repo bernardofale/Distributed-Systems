@@ -1,8 +1,7 @@
-package shared_regions;
+package serverSide.sharedRegions;
 
-import comm_infra.Room;
-import entities.OrdinaryThief;
-import entities.OrdinaryThievesStates;
+import clientSide.entities.*;
+import comm_infra.*;
 import main.Simul_Par;
 
 /**

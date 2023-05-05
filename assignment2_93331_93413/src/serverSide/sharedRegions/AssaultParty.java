@@ -1,9 +1,8 @@
-package shared_regions;
+package serverSide.sharedRegions;
 
-import entities.OrdinaryThief;
-import entities.OrdinaryThievesStates;
+import clientSide.entities.*;
+import serverSide.main.*;
 import genclass.GenericIO;
-import main.Simul_Par;
 import java.util.*;
 import java.util.stream.IntStream;
 

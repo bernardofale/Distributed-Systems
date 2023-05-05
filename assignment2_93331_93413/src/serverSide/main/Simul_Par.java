@@ -1,4 +1,4 @@
-package main;
+package serverSide.main;
 
 /**
  * Represents constants and simulation parameters of the program

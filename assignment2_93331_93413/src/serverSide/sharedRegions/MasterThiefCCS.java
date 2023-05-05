@@ -1,12 +1,9 @@
-package shared_regions;
+package serverSide.sharedRegions;
 
-import comm_infra.Party;
-import entities.MasterThief;
-import entities.MasterThiefStates;
-import entities.OrdinaryThief;
-import entities.OrdinaryThievesStates;
+import clientSide.entities.*;
 import genclass.GenericIO;
 import main.Simul_Par;
+import comm_infra.*;
 
 /**
  * Represents the master thief control and collection site shared region.

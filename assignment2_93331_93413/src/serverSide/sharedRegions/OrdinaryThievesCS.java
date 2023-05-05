@@ -1,8 +1,13 @@
-package shared_regions;
+package serverSide.sharedRegions;
 
-import entities.OrdinaryThief;
+import clientSide.entities.*;
+import serverSide.entities.*;
+import serverSide.main.*;
+import clientSide.stubs.*;
 import genclass.GenericIO;
 import main.Simul_Par;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Represents the concentration site shared region of the ordinary thieves

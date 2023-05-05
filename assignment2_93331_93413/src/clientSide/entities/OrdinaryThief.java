@@ -1,8 +1,8 @@
-package entities;
+package clientSide.entities;
 
 import genclass.GenericIO;
-import main.Simul_Par;
-import shared_regions.*;
+import serverSide.main.*;
+import clientSide.stubs.*;
 
 /**
  * Represents an Ordinary thief thread
@@ -14,37 +14,37 @@ public class OrdinaryThief extends Thread{
 
     private OrdinaryThievesStates OT_state;
 
-    private AssaultParty my_ap;
+    private AssaultPartyStub my_ap;
 
     private int ap_id;
-    private final OrdinaryThievesCS c_site;
+    private final OrdinaryThiefCSStub c_site;
 
-    private final MasterThiefCCS cc_site;
+    private final MasterThiefCCSStub cc_site;
 
     private boolean isHoldingCanvas;
 
     private final int MDj;
 
-    private final Museum museum;
+    private final MuseumStub museum;
 
     private boolean isOver;
 
     private int position;
 
-    private final AssaultParty[] parties;
+    private final AssaultPartyStub[] parties;
 
     private boolean inParty;
 
-    private GeneralRepo gp;
+    private final GeneralRepoStub gp;
     /**
      * Creates an Ordinary thief object and initializes variables/flags
      */
-    public OrdinaryThief(String name, int id, OrdinaryThievesCS c_site, MasterThiefCCS cc_site, AssaultParty[] parties, Museum museum, GeneralRepo gp) {
+    public OrdinaryThief(String name, int id, OrdinaryThiefCSStub c_site, MasterThiefCCSStub cc_site, AssaultPartyStub[] parties, MuseumStub museum, GeneralRepoStub gp) {
         super(name);
         this.OT_id = id;
         this.c_site = c_site;
         this.OT_state = OrdinaryThievesStates.CONCENTRATION_SITE;
-        this.parties = new AssaultParty[Simul_Par.N_Parties];
+        this.parties = new AssaultPartyStub[Simul_Par.N_Parties];
         for (int i = 0; i < Simul_Par.N_Parties; i++) {
             this.parties[i] = parties[i];
         }
@@ -161,7 +161,7 @@ public class OrdinaryThief extends Thread{
      * Get the ordinary thief's assault party
      * @return an Assault party object containing the assault party information
      */
-    public AssaultParty getMy_ap() {
+    public AssaultPartyStub getMy_ap() {
         return my_ap;
     }
 
