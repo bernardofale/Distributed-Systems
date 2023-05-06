@@ -1,13 +1,10 @@
 package serverSide.sharedRegions;
 
 import clientSide.entities.*;
-import serverSide.entities.*;
+import clientSide.stubs.GeneralRepoStub;
 import serverSide.main.*;
-import clientSide.stubs.*;
 import genclass.GenericIO;
-import main.Simul_Par;
-import java.util.*;
-import java.util.stream.IntStream;
+import serverSide.main.Simul_Par;
 
 /**
  * Represents the concentration site shared region of the ordinary thieves
@@ -20,12 +17,12 @@ public class OrdinaryThievesCS {
 
     private boolean heistOver;
 
-    private GeneralRepo gp;
+    private GeneralRepoStub gp;
     /**
      * Creates the monitor and initializes an array of thief signals
      * @param gp General Repository
      */
-    public OrdinaryThievesCS(GeneralRepo gp){
+    public OrdinaryThievesCS(GeneralRepoStub gp){
         thieves = new int[Simul_Par.M - 1];
         for (int i = 0; i < Simul_Par.M - 1; i++)
             thieves[i] = 0;

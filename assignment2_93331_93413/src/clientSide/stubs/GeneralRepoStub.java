@@ -54,4 +54,16 @@ public class GeneralRepoStub {
     public void shutdown(){
 
     }
+
+    public void setOtPosition(int otId, int validPo) {
+    }
+
+    public void setOtInParty(int i, int otId, int id) {
+    }
+
+    public void setDistance(int i, int distance) {
+    }
+
+    public void setNP(int i, int nCanvas) {
+    }
 }

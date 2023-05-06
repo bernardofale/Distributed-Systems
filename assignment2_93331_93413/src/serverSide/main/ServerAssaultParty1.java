@@ -3,13 +3,13 @@ package serverSide.main;
 import clientSide.stubs.GeneralRepoStub;
 import comm_infra.ServerCom;
 import genclass.GenericIO;
-import serverSide.entities.MasterThiefCCSProxy;
-import serverSide.sharedRegions.MasterThiefCCS;
-import serverSide.sharedRegions.MasterThiefCCSInterface;
+import serverSide.entities.AssaultPartyProxy;
+import serverSide.sharedRegions.AssaultParty;
+import serverSide.sharedRegions.AssaultPartyInterface;
 
 import java.net.SocketTimeoutException;
 
-public class ServerMasterThiefCCS {
+public class ServerAssaultParty1 {
     /**
      *  Flag signaling the service is active.
      */
@@ -20,20 +20,20 @@ public class ServerMasterThiefCCS {
      *  Main method.
      *
      *    @param args runtime arguments
-     *        args[0] - port nunber for listening to service requests
+     *        args[0] - port number for listening to service requests for AP1
      *        args[1] - name of the platform where is located the server for the general repository
-     *        args[2] - port nunber where the server for the general repository is listening to service requests
+     *        args[2] - port number where the server for the general repository is listening to service requests
      */
 
     public static void main (String [] args)
     {
-        MasterThiefCCS CCS;                                              // Control and collection site (service to be rendered)
-        MasterThiefCCSInterface CCSInter;                                // interface to the control and collection site
+        AssaultParty AP;                                           // Assault Party (service to be rendered)
+        AssaultPartyInterface APInter;                                // interface to the Assault party
         GeneralRepoStub reposStub;                                    // stub to the general repository
-        ServerCom scon, sconi;                                         // communication channels
+        ServerCom scon, sconi;                                         // communication channel
         int portNumb = -1;                                             // port number for listening to service requests
         String reposServerName;                                        // name of the platform where is located the server for the general repository
-        int reposPortNumb = -1;                                        // port nunber where the server for the general repository is listening to service requests
+        int reposPortNumb = -1;                                        // port number where the server for the general repository is listening to service requests
 
         if (args.length != 3)
         { GenericIO.writelnString ("Wrong number of parameters!");
@@ -66,8 +66,8 @@ public class ServerMasterThiefCCS {
         /* service is established */
 
         reposStub = new GeneralRepoStub (reposServerName, reposPortNumb);       // communication to the general repository is instantiated
-        CCS = new MasterThiefCCS (reposStub);                                      // service is instantiated
-        CCSInter = new MasterThiefCCSInterface(CCS);                            // interface to the service is instantiated
+        AP = new AssaultParty(1, reposStub);                                      // service is instantiated
+        APInter = new AssaultPartyInterface (AP);                            // interface to the service is instantiated
         scon = new ServerCom (portNumb);                                         // listening channel at the public port is established
         scon.start ();
         GenericIO.writelnString ("Service is established!");
@@ -75,13 +75,13 @@ public class ServerMasterThiefCCS {
 
         /* service request processing */
 
-        MasterThiefCCSProxy cliProxy;                                // service provider agent
+        AssaultPartyProxy cliProxy;                                // service provider agent
 
         waitConnection = true;
         while (waitConnection)
         { try
-        { sconi = scon.accept ();                                    // enter listening procedure
-            cliProxy = new MasterThiefCCSProxy (sconi, CCSInter);    // start a service provider agent to address
+        { sconi = scon.accept();                                    // enter listening procedure
+            cliProxy = new AssaultPartyProxy (sconi, APInter);    // start a service provider agent to address
             cliProxy.start ();                                         //   the request of service
         }
         catch (SocketTimeoutException ignored) {}

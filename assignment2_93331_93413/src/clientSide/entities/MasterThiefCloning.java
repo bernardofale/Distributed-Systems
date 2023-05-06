@@ -31,6 +31,6 @@ public interface MasterThiefCloning {
      *     @return master thief state
      */
 
-    public int getMTState ();
+    public MasterThiefStates getMTState ();
 
 }

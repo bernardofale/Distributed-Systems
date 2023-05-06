@@ -31,5 +31,5 @@ public interface OrdinaryThiefCloning {
      *     @return thief state
      */
 
-    public int getOTState ();
+    public OrdinaryThievesStates getOTState ();
 }

@@ -1,8 +1,9 @@
 package serverSide.sharedRegions;
 
 import clientSide.entities.*;
+import clientSide.stubs.GeneralRepoStub;
 import comm_infra.*;
-import main.Simul_Par;
+import serverSide.main.Simul_Par;
 
 /**
  * Represents the Museum shared region containing information regarding the rooms inside
@@ -11,12 +12,12 @@ public class Museum {
 
     private Room[] rooms;
 
-    private GeneralRepo gp;
+    private GeneralRepoStub gp;
     /**
      * Creates a museum object and initializes the rooms (0..N)
      * @param gp General Repository
      */
-    public Museum(GeneralRepo gp){
+    public Museum(GeneralRepoStub gp){
         rooms = new Room[Simul_Par.N];
         this.gp = gp;
         for (int i = 0; i < Simul_Par.N; i++) {

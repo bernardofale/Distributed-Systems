@@ -1,6 +1,7 @@
 package serverSide.sharedRegions;
 
 import clientSide.entities.*;
+import clientSide.stubs.GeneralRepoStub;
 import serverSide.main.*;
 import genclass.GenericIO;
 import java.util.*;
@@ -20,14 +21,14 @@ public class AssaultParty {
 
     private int room_assigned;
 
-    private GeneralRepo gp;
+    private GeneralRepoStub gp;
 
     /**
      * Creates an assault party object and initialize variables and flags
      * @param id of the Assault party (0 .. N_Parties)
      * @param gp General Repository
      */
-    public AssaultParty(int id, GeneralRepo gp){
+    public AssaultParty(int id, GeneralRepoStub gp){
         this.id = id;
         AP = new ArrayList<>(Simul_Par.K);
         next_inLine = 0;

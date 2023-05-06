@@ -1,8 +1,9 @@
 package serverSide.sharedRegions;
 
 import clientSide.entities.*;
+import clientSide.stubs.GeneralRepoStub;
 import genclass.GenericIO;
-import main.Simul_Par;
+import serverSide.main.Simul_Par;
 import comm_infra.*;
 
 /**
@@ -16,14 +17,14 @@ public class MasterThiefCCS {
     private boolean collect;
     private Party[] parties;
 
-    private GeneralRepo gp;
+    private GeneralRepoStub gp;
 
     /**
      * Creates the master thief control and collection site object. Initialize variables and N_Parties of Party
      * to keep useful data linked to the thieves and respective parties
      * @param gp General Repository
      */
-    public MasterThiefCCS(GeneralRepo gp){
+    public MasterThiefCCS(GeneralRepoStub gp){
         collected_canvas = 0;
         partiesReady = false;
         collect = false;

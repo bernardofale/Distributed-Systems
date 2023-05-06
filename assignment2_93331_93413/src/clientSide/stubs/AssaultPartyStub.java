@@ -1,7 +1,6 @@
 package clientSide.stubs;
 
 import clientSide.entities.OrdinaryThief;
-
 import java.util.ArrayList;
 
 public class AssaultPartyStub {
