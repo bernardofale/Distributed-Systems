@@ -2,6 +2,7 @@ package serverSide.entities;
 
 import clientSide.entities.*;
 import comm_infra.*;
+import serverSide.main.Simul_Par;
 import serverSide.sharedRegions.AssaultPartyInterface;
 import genclass.GenericIO;
 
@@ -47,6 +48,14 @@ public class AssaultPartyProxy extends Thread implements MasterThiefCloning, Ord
      *  Ordinary thief state.
      */
 
+    private boolean readyToLeave;
+
+    private boolean inParty;
+
+    private int position;
+
+    private int MDj;
+
     private OrdinaryThievesStates OTState;
 
     /**
@@ -60,6 +69,7 @@ public class AssaultPartyProxy extends Thread implements MasterThiefCloning, Ord
         super ("AssaultPartyProxy_" + AssaultPartyProxy.getProxyId ());
         this.sconi = sconi;
         this.APInter = APInter;
+        readyToLeave = false;
     }
 
     /**
@@ -88,6 +98,14 @@ public class AssaultPartyProxy extends Thread implements MasterThiefCloning, Ord
         return proxyId;
     }
 
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     @Override
     public void setMTId(int id) {
         MTId = id;
@@ -97,6 +115,10 @@ public class AssaultPartyProxy extends Thread implements MasterThiefCloning, Ord
     public int getMTId() {
 
         return MTId;
+    }
+
+    public int getMDj() {
+        return MDj;
     }
 
     @Override
@@ -129,6 +151,24 @@ public class AssaultPartyProxy extends Thread implements MasterThiefCloning, Ord
         return OTState;
     }
 
+    public boolean getReadyToLeave() {
+        return readyToLeave;
+    }
+
+    public void setReadyToLeave(boolean readyToLeave) {
+        this.readyToLeave = readyToLeave;
+    }
+
+    public boolean isInParty() {
+        return inParty;
+    }
+
+    public void setInParty(boolean inParty) {
+        this.inParty = inParty;
+    }
+
+    public void setRoom_assigned(int roomToSteal) {
+    }
     /**
      *  Life cycle of the service provider agent.
      */
@@ -153,4 +193,9 @@ public class AssaultPartyProxy extends Thread implements MasterThiefCloning, Ord
         sconi.writeObject (outMessage);                                // send service reply
         sconi.close ();                                                // close the communication channel
     }
+
+    public void setMDj(int mDj) {
+        this.MDj = mDj;
+    }
+
 }

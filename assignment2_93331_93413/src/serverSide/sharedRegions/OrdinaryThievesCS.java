@@ -2,6 +2,8 @@ package serverSide.sharedRegions;
 
 import clientSide.entities.*;
 import clientSide.stubs.GeneralRepoStub;
+import serverSide.entities.AssaultPartyProxy;
+import serverSide.entities.OrdinaryThievesCSProxy;
 import serverSide.main.*;
 import genclass.GenericIO;
 import serverSide.main.Simul_Par;
@@ -18,11 +20,28 @@ public class OrdinaryThievesCS {
     private boolean heistOver;
 
     private GeneralRepoStub gp;
+
+    private OrdinaryThievesCSProxy MT_Proxy;
+
+    private OrdinaryThievesCSProxy[] OT_Proxy;
+
+    /**
+     *   Number of entity groups requesting the shutdown.
+     */
+
+    private int nEntities;
     /**
      * Creates the monitor and initializes an array of thief signals
      * @param gp General Repository
      */
     public OrdinaryThievesCS(GeneralRepoStub gp){
+        MT_Proxy = null;
+
+        OT_Proxy = new OrdinaryThievesCSProxy[Simul_Par.M - 1];
+        for (int i = 0; i < Simul_Par.M - 1; i++) {
+            OT_Proxy[i] = null;
+        }
+        this.nEntities = 0;
         thieves = new int[Simul_Par.M - 1];
         for (int i = 0; i < Simul_Par.M - 1; i++)
             thieves[i] = 0;
@@ -51,8 +70,8 @@ public class OrdinaryThievesCS {
      * @return Ordinary thief signal
      */
     public synchronized int amINeeded(){
-        OrdinaryThief ot = ((OrdinaryThief) Thread.currentThread());
-        int thief_id = ot.getOT_id();
+        int thief_id = ((OrdinaryThievesCSProxy) Thread.currentThread()).getOTId();
+        OT_Proxy[thief_id] = (OrdinaryThievesCSProxy) Thread.currentThread();
 
         if(thieves[thief_id] == 0){
             n_available_thieves++;
@@ -105,5 +124,33 @@ public class OrdinaryThievesCS {
         for(int i =0; i < Simul_Par.M - 1 ;i++)
             thieves[i] = 1;
         notifyAll();
+    }
+
+    public synchronized void endOperation ()
+    {
+        while (nEntities == 0)
+        { /* the master thief waits for the termination of the ordinary thieves */
+            try
+            { wait ();
+            }
+            catch (InterruptedException ignored) {}
+        }
+        if (MT_Proxy != null)
+            MT_Proxy.interrupt ();
+    }
+
+
+    /**
+     *   Operation server shutdown.
+     *
+     *   New operation.
+     */
+
+    public synchronized void shutdown ()
+    {
+        nEntities += 1;
+        if (nEntities >= Simul_Par.E)
+            ServerOrdinaryThievesCS.waitConnection = false;
+        notifyAll ();                                        // the master thief may now terminate
     }
 }

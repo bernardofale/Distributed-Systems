@@ -69,8 +69,13 @@ public class Simul_Par {
      *
      */
 
+    /**
+     * Number of entities requesting shutdown
+     */
     public static final int N_Parties = 2;
 
+
+    public static final int E = 2;
     /**
      *   Get a random number between given interval
      * @param max maximum value of the interval

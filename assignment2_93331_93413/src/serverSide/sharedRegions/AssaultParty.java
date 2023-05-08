@@ -2,6 +2,8 @@ package serverSide.sharedRegions;
 
 import clientSide.entities.*;
 import clientSide.stubs.GeneralRepoStub;
+import serverSide.entities.AssaultPartyProxy;
+import serverSide.entities.OrdinaryThievesCSProxy;
 import serverSide.main.*;
 import genclass.GenericIO;
 import java.util.*;
@@ -11,7 +13,7 @@ import java.util.stream.IntStream;
  * Represents the AssaultParty shared region
  */
 public class AssaultParty {
-    private ArrayList<OrdinaryThief> AP;
+    private ArrayList<Integer> AP;
 
     private final int id;
 
@@ -23,25 +25,42 @@ public class AssaultParty {
 
     private GeneralRepoStub gp;
 
+    private AssaultPartyProxy MT_Proxy;
+
+    private AssaultPartyProxy[] OT_Proxy;
+
+    /**
+     *   Number of entity groups requesting the shutdown.
+     */
+
+    private int nEntities;
+
     /**
      * Creates an assault party object and initialize variables and flags
      * @param id of the Assault party (0 .. N_Parties)
      * @param gp General Repository
      */
     public AssaultParty(int id, GeneralRepoStub gp){
+        MT_Proxy = null;
+
+        OT_Proxy = new AssaultPartyProxy[Simul_Par.M - 1];
+        for (int i = 0; i < Simul_Par.M - 1; i++) {
+            OT_Proxy[i] = null;
+        }
         this.id = id;
         AP = new ArrayList<>(Simul_Par.K);
         next_inLine = 0;
         room_assigned = -1;
         distance = -1;
         this.gp = gp;
+        this.nEntities = 0;
     }
 
     /**
      * Gets the thieves in the Assault party
      * @return an array list of ordinary thieves
      */
-    public ArrayList<OrdinaryThief> getAP() {
+    public ArrayList<Integer> getAP() {
         return AP;
     }
 
@@ -101,7 +120,7 @@ public class AssaultParty {
      * Sets the Assault party array list. Useful to reset the party data structure
      * @param AP new Array list object
      */
-    public void setAP(ArrayList<OrdinaryThief> AP) {
+    public void setAP(ArrayList<Integer> AP) {
         this.AP = AP;
     }
 
@@ -119,11 +138,12 @@ public class AssaultParty {
      * @return a boolean that reflects the ordinary thieves' situation (Ready to leave or not)
      */
     private boolean allReady() {
-        for (OrdinaryThief ot : getAP()) {
-            if(!ot.isReadyToLeave()){
+        for (int i = 0; i < getAP().size(); i++) {
+            if (!OT_Proxy[i].getReadyToLeave()) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -131,12 +151,13 @@ public class AssaultParty {
      * Checks if all the ordinary thieves have reached the desired destination
      * @return a boolean
      */
-    public boolean inRoom() {
-        for (OrdinaryThief ot : getAP()) {
-            if (ot.getPosition() != getDistance()) {
+    private boolean inRoom() {
+        for (int i = 0; i < getAP().size(); i++) {
+            if (OT_Proxy[i].getPosition() != getDistance()) {
                 return false;
             }
         }
+
         return true;
     }
     /**
@@ -163,7 +184,7 @@ public class AssaultParty {
      */
     private int[] getValidPositions(int i) {
         int[] validPos = IntStream.range(0, Simul_Par.K)
-                .map(k -> getAP().get(k).getPosition())
+                .map(k -> OT_Proxy[k].getPosition())
                 .toArray();
         validPos[getNext_inLine()] += i;
         if (validPos[getNext_inLine()] >= getDistance()) validPos[getNext_inLine()] = getDistance();
@@ -174,10 +195,9 @@ public class AssaultParty {
      * The ordinary thief crawls according to the rules
      */
     public synchronized void crawlIn(){
-        OrdinaryThief ot = (OrdinaryThief) Thread.currentThread();
-        int ot_id = ot.getOT_id();
+        int thief_id = ((AssaultPartyProxy) Thread.currentThread()).getOTId();
 
-        while (ot_id != getAP().get(getNext_inLine()).getOT_id() || !isFull()) {
+        while (thief_id != getAP().get(getNext_inLine()) || !isFull()) {
             try {
                 wait();
             } catch (Exception e) {
@@ -186,11 +206,12 @@ public class AssaultParty {
         }
 
         int[] validPos;
-        for (int i = getAP().get(getNext_inLine()).getMDj(); i > 0; i--) {
+        int n = getAP().get(getNext_inLine());
+        for (int i = OT_Proxy[n].getMDj(); i > 0; i--) {
             validPos = getValidPositions(i);
             if (isValidPosition(validPos)) {
-                getAP().get(getNext_inLine()).setPosition(validPos[getNext_inLine()]);
-                gp.setOtPosition(ot_id, validPos[getNext_inLine()]);
+                OT_Proxy[n].setPosition(validPos[getNext_inLine()]);
+                gp.setOtPosition(thief_id, validPos[getNext_inLine()]);
                 break;
             }
         }
@@ -206,7 +227,8 @@ public class AssaultParty {
     public synchronized void next() {
         while (!inRoom()) {
             try {
-                if (getAP().get(getNext_inLine()).getPosition() == getDistance()) {
+                int n = getAP().get(getNext_inLine());
+                if (OT_Proxy[n].getPosition() == getDistance()) {
                     next_inLine = (getNext_inLine() + Simul_Par.K - 1) % Simul_Par.K;
                     notifyAll();
                 }
@@ -221,8 +243,10 @@ public class AssaultParty {
      * some flags and notify
      */
     public synchronized void reverseDirection(){
-        OrdinaryThief ot = (OrdinaryThief) Thread.currentThread();
-        ot.setReadyToLeave(true);
+        int thief_id = ((AssaultPartyProxy) Thread.currentThread()).getOTId();
+        OT_Proxy[thief_id] = (AssaultPartyProxy) Thread.currentThread();
+
+        OT_Proxy[thief_id].setReadyToLeave(true);
         while(!allReady()){
             try {
                 wait();
@@ -231,9 +255,9 @@ public class AssaultParty {
             }
         }
         GenericIO.writeString("Reversing direction!\n");
-        ot.setOT_state(OrdinaryThievesStates.CRAWLING_OUTWARDS);
-        gp.setOT_states(ot.getOT_id(), OrdinaryThievesStates.CRAWLING_OUTWARDS);
-        ot.setPosition(0);
+        OT_Proxy[thief_id].setOTState(OrdinaryThievesStates.CRAWLING_OUTWARDS);
+        gp.setOT_states(thief_id, OrdinaryThievesStates.CRAWLING_OUTWARDS);
+        OT_Proxy[thief_id].setPosition(0);
         notifyAll();
     }
 
@@ -241,10 +265,9 @@ public class AssaultParty {
      * Same movement as in crawlIn() but reverted
      */
     public synchronized void crawlOut(){
-        OrdinaryThief ot = (OrdinaryThief) Thread.currentThread();
-        int ot_id = ot.getOT_id();
+        int thief_id = ((AssaultPartyProxy) Thread.currentThread()).getOTId();
 
-        while (ot_id != getAP().get(getNext_inLine()).getOT_id() || !isFull()) {
+        while (thief_id != getAP().get(getNext_inLine()) || !isFull()) {
             try {
                 wait();
             } catch (Exception e) {
@@ -253,11 +276,12 @@ public class AssaultParty {
         }
 
         int[] validPos;
-        for (int i = getAP().get(getNext_inLine()).getMDj(); i > 0; i--) {
+        int n = getAP().get(getNext_inLine());
+        for (int i = OT_Proxy[n].getMDj(); i > 0; i--) {
             validPos = getValidPositions(i);
             if (isValidPosition(validPos)) {
-                getAP().get(getNext_inLine()).setPosition(validPos[getNext_inLine()]);
-                gp.setOtPosition(ot_id, validPos[getNext_inLine()]);
+                OT_Proxy[n].setPosition(validPos[getNext_inLine()]);
+                gp.setOtPosition(thief_id, validPos[getNext_inLine()]);
                 break;
             }
         }
@@ -269,15 +293,45 @@ public class AssaultParty {
      * Ordinary thief joins party
      */
     public synchronized void join() {
-        OrdinaryThief ot = (OrdinaryThief) Thread.currentThread();
-        int ot_id = ot.getOT_id();
-        GenericIO.writelnString("Thief#"+ot_id+" placed in AP#"+getId());
-        getAP().add(ot);
-        ot.setReadyToLeave(false);
-        ot.setInParty(true);
-        gp.setIsInParty(ot_id, ot.isInParty());
-        gp.setOtInParty(getAP().indexOf(ot), ot_id, getId());
+        int thief_id = ((AssaultPartyProxy) Thread.currentThread()).getOTId();
+        OT_Proxy[thief_id] = (AssaultPartyProxy) Thread.currentThread();
+
+        GenericIO.writelnString("Thief#"+ thief_id +" placed in AP#"+getId());
+        getAP().add(thief_id);
+        OT_Proxy[thief_id].setReadyToLeave(false);
+        OT_Proxy[thief_id].setInParty(true);
+        gp.setIsInParty(thief_id, OT_Proxy[thief_id].isInParty());
+        gp.setOtInParty(getAP().indexOf(thief_id), thief_id, getId());
         if(isFull()) notifyAll();
 
+    }
+
+    public synchronized void endOperation (int MTId)
+    {
+        while (nEntities == 0)
+        { /* the master thief waits for the termination of the ordinary thieves */
+            try
+            { wait ();
+            }
+            catch (InterruptedException ignored) {}
+        }
+        if (MT_Proxy != null)
+            MT_Proxy.interrupt ();
+    }
+
+
+    /**
+     *   Operation server shutdown.
+     *
+     *   New operation.
+     */
+
+    public synchronized void shutdown ()
+    {
+        nEntities += 1;
+        if (nEntities >= Simul_Par.E)
+            if(getId() == 0) ServerAssaultParty0.waitConnection = false;
+            else ServerAssaultParty1.waitConnection = false;
+        notifyAll ();                                        // the master thief may now terminate
     }
 }

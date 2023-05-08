@@ -2,6 +2,8 @@ package serverSide.sharedRegions;
 
 import comm_infra.Message;
 import comm_infra.MessageException;
+import comm_infra.MessageType;
+import serverSide.entities.OrdinaryThievesCSProxy;
 
 public class OrdinaryThievesCSInterface {
     /**
@@ -36,7 +38,34 @@ public class OrdinaryThievesCSInterface {
         Message outMessage = null;                                     // outgoing message
 
         /* validation of the incoming message */
+        switch (inMessage.getMsgType()){
+            case MessageType.REQEOH:
+                CS.endOfHeist();
+                outMessage = new Message(MessageType.EOHDONE);
 
+                break;
+            case MessageType.REQPREPAP:
+                CS.prepareAssaultParty();
+                outMessage = new Message(MessageType.PREPAPDONE);
+
+                break;
+            case MessageType.REQAIN:
+                ((OrdinaryThievesCSProxy)Thread.currentThread()).setOTId(inMessage.getOTId());
+                int ot_signal = CS.amINeeded();
+                outMessage = new Message(MessageType.AINDONE, inMessage.getOTId(), ot_signal);
+
+                break;
+            case MessageType.SHUT:
+                CS.shutdown();
+
+                outMessage = new Message(MessageType.SHUTDONE);
+                break;
+            case MessageType.ENDOP:
+                CS.endOperation();
+                outMessage = new Message(MessageType.ENDOPDONE);
+
+                break;
+        }
 
         return (outMessage);
     }

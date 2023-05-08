@@ -1,6 +1,7 @@
 package serverSide.sharedRegions;
 
 import comm_infra.*;
+import serverSide.entities.MuseumProxy;
 
 public class MuseumInterface {
     /**
@@ -35,8 +36,29 @@ public class MuseumInterface {
         Message outMessage = null;                                     // outgoing message
 
         /* validation of the incoming message */
+        switch (inMessage.getMsgType()) {
+            case MessageType.REQMGR:
+                Room[] rooms = M.getRooms();
+                outMessage = new Message(MessageType.MGRDONE, rooms);
 
+                break;
+            case MessageType.REQCANV:
+                ((MuseumProxy) Thread.currentThread()).setOTId(inMessage.getOTId());
+                boolean rolled = M.rollACanvas(inMessage.getRoomAssigned());
+                outMessage = new Message(MessageType.CANVDONE, rolled);
 
+                break;
+            case MessageType.SHUT:
+                M.shutdown();
+
+                outMessage = new Message(MessageType.SHUTDONE);
+                break;
+            case MessageType.ENDOP:
+                M.endOperation();
+                outMessage = new Message(MessageType.ENDOPDONE);
+
+                break;
+        }
         return (outMessage);
     }
 }

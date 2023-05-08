@@ -15,7 +15,9 @@ public class GeneralRepo {
     private MuseumLog mLog;
     private static String FILENAME;
 
+    private int nEntities;
     public GeneralRepo(){
+        this.nEntities = 0;
         if ((FILENAME == null) || Objects.equals (FILENAME, ""))
             this.FILENAME = "logger";
         MT_state = MasterThiefStates.PLANNING_THE_HEIST;
@@ -29,8 +31,6 @@ public class GeneralRepo {
         }
         mLog = new MuseumLog();
         collected_canvas = 0;
-
-        reportInitialStatus();
     }
 
     public synchronized void setOtInParty(int idx, int ot_id, int ap_id) {
@@ -92,6 +92,34 @@ public class GeneralRepo {
         char c = (isInParty) ? 'P' : 'W';
         otLog[ot_id].setInParty(c);
         reportStatus();
+    }
+
+    /**
+     *   Operation initialization of simulation.
+     *
+     *   New operation.
+     *
+     *     @param logFileName name of the logging file
+     */
+
+    public synchronized void initSimul (String logFileName)
+    {
+        if (!Objects.equals (logFileName, ""))
+            this.FILENAME = logFileName;
+        reportInitialStatus ();
+    }
+
+    /**
+     *   Operation server shutdown.
+     *
+     *   New operation.
+     */
+
+    public synchronized void shutdown ()
+    {
+        nEntities += 1;
+        if (nEntities >= Simul_Par.E)
+            ServerGeneralRepo.waitConnection = false;
     }
 
     private void reportInitialStatus ()

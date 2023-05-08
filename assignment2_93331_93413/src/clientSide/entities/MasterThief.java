@@ -109,7 +109,6 @@ public class MasterThief extends Thread{
                     c_site.prepareAssaultParty();
                     for(int i = 0; i < Simul_Par.N_Parties; i++){
                         int roomToSteal= getRoomToBeStolen();
-                        GenericIO.writeString("Assigning room "+roomToSteal+" to party "+parties[i].getId()+"\n");
                         int distance = museum.getRooms()[roomToSteal].getDistance();
                         museum.getRooms()[roomToSteal].setAssigned(true);
                         parties[i].setRoom_assigned(roomToSteal);

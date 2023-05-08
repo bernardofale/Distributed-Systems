@@ -54,6 +54,16 @@ public class MasterThiefCCSProxy extends Thread implements MasterThiefCloning, O
 
     private OrdinaryThievesStates OTState;
 
+    private boolean holdingCanvas;
+
+    public boolean isHoldingCanvas() {
+        return holdingCanvas;
+    }
+
+    public void setHoldingCanvas(boolean holdingCanvas) {
+        this.holdingCanvas = holdingCanvas;
+    }
+
     /**
      *  Instantiation of a client proxy.
      *
@@ -65,6 +75,7 @@ public class MasterThiefCCSProxy extends Thread implements MasterThiefCloning, O
         super ("MasterThiefCCSProxy_" + MasterThiefCCSProxy.getProxyId ());
         this.sconi = sconi;
         this.MTInter = MTInter;
+        holdingCanvas = false;
     }
 
     /**
