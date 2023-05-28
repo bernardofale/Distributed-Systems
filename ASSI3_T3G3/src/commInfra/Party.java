@@ -1,6 +1,6 @@
-package comm_infra;
+package commInfra;
 
-import main.Simul_Par;
+import serverSide.main.Simul_Par;
 import java.util.ArrayList;
 
 /**

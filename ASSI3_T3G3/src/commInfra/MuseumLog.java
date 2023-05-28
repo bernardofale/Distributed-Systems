@@ -1,6 +1,6 @@
-package comm_infra;
+package commInfra;
 
-import main.Simul_Par;
+import serverSide.main.Simul_Par;
 
 /**
  * Represents an auxiliary data structure for keeping logging information of the Museum and its rooms;

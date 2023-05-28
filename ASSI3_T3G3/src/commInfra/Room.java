@@ -1,11 +1,13 @@
-package comm_infra;
+package commInfra;
 
-import main.Simul_Par;
+import serverSide.main.*;
+
+import java.io.Serializable;
 
 /**
  * Represent a room Ni of the museum. Keeps data related to distance, number of canvas, if it is assigned or not;
  */
-public class Room {
+public class Room implements Serializable {
 
     private int n_canvas;
 

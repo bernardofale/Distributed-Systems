@@ -1,9 +1,11 @@
-package comm_infra;
+package commInfra;
+
+import java.io.Serializable;
 
 /** Represents a canvas and its parameters. Useful for knowing if a canvas is being stolen or not.
  *
  */
-public class Canvas {
+public class Canvas implements Serializable {
     private boolean isStolen;
     private final int id;
 

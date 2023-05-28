@@ -3,20 +3,35 @@ package interfaces;
 import clientSide.entities.MasterThiefStates;
 import clientSide.entities.OrdinaryThievesStates;
 
-public interface GeneralReposInterface {
-    void setMT_state(MasterThiefStates masterThiefStates);
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-    void setAPRid(int i, int roomToSteal);
+public interface GeneralReposInterface extends Remote {
+    void setMT_state(MasterThiefStates masterThiefStates) throws RemoteException;
 
-    void setCanvas(int results);
+    void setAPRid(int i, int roomToSteal) throws RemoteException;
 
-    void printSumUp();
+    void setCanvas(int results) throws RemoteException;
 
-    void setOt_mdj(int otId, int mDj);
+    void printSumUp() throws RemoteException;
 
-    void setOT_states(int otId, OrdinaryThievesStates ordinaryThievesStates);
+    void setOt_mdj(int otId, int mDj) throws RemoteException;
 
-    void setOtHasCanvas(int otId, boolean isHoldingCanvas);
+    void setOT_states(int otId, OrdinaryThievesStates ordinaryThievesStates) throws RemoteException;
 
-    void setIsInParty(int otId, boolean inParty);
+    void setOtHasCanvas(int otId, boolean isHoldingCanvas) throws RemoteException;
+
+    void setIsInParty(int otId, boolean inParty) throws RemoteException;
+
+    void setOtPosition(int otId, int validPo) throws RemoteException;
+
+    void setOtInParty(int i, int otId, int id) throws RemoteException;
+
+    void setDistance(int i, int distance) throws RemoteException;
+
+    void setNP(int i, int nCanvas) throws RemoteException;
+
+    public void shutdown () throws RemoteException;
+
+    public void initSimul(String fileName) throws RemoteException;
 }

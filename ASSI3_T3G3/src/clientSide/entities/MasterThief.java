@@ -1,6 +1,6 @@
 package clientSide.entities;
 
-import comm_infra.Room;
+import commInfra.*;
 import genclass.GenericIO;
 import interfaces.*;
 import serverSide.main.*;
@@ -102,48 +102,181 @@ public class MasterThief extends Thread{
         while(!isOver()){
             switch(getMT_state()){
                 case PLANNING_THE_HEIST :
-                    cc_site.startOperations();
+                    startOps();
                     break;
+
                 case DECIDING_WHAT_TO_DO :
-                    gp.setMT_state(MasterThiefStates.DECIDING_WHAT_TO_DO);
-                    cc_site.appraiseSit(isHeistOver());
+                    //gp.setMT_state(MasterThiefStates.DECIDING_WHAT_TO_DO);
+                    appraiseSit();
                     break;
+
                 case ASSEMBLING_A_GROUP :
-                    gp.setMT_state(MasterThiefStates.ASSEMBLING_A_GROUP);
-                    c_site.prepareAssaultParty();
+                    //gp.setMT_state(MasterThiefStates.ASSEMBLING_A_GROUP);
+                    prepareAssaultParty();
                     for(int i = 0; i < Simul_Par.N_Parties; i++){
-                        int roomToSteal= getRoomToBeStolen();
-                        GenericIO.writeString("Assigning room "+roomToSteal+" to party "+parties[i].getId()+"\n");
-                        int distance = museum.getRooms()[roomToSteal].getDistance();
-                        museum.getRooms()[roomToSteal].setAssigned(true);
-                        parties[i].setRoom_assigned(roomToSteal);
-                        parties[i].setDistance(distance);
-                        gp.setAPRid(i, roomToSteal);
-                    }
-                    cc_site.sendAssaultParty();
-                    break;
-                case WAITING_FOR_GROUP_ARRIVAL:
-                    gp.setMT_state(MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL);
-                    cc_site.takeARest();
-                    cc_site.collectACanvas();
-                    for (int i = 0; i < Simul_Par.N_Parties; i++) {
-                        museum.getRooms()[parties[i].getRoom_assigned()].setAssigned(false);
-                        if(museum.getRooms()[parties[i].getRoom_assigned()].getN_canvas() == 0){
-                            museum.getRooms()[parties[i].getRoom_assigned()].setEmpty(true);
+                        int roomToSteal= 0;
+                        try {
+                            roomToSteal = getRoomToBeStolen();
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
                         }
-                        parties[i].setAP(new ArrayList<>(Simul_Par.K));
-                        parties[i].setNext_inLine(0);
+                        try {
+                            GenericIO.writeString("Assigning room " + roomToSteal + " to party "+parties[i].getId()+"\n");
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        int distance = 0;
+                        try {
+                            distance = museum.getRooms()[roomToSteal].getDistance();
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            museum.getRooms()[roomToSteal].setAssigned(true);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            parties[i].setRoom_assigned(roomToSteal);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            parties[i].setDistance(distance);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        //gp.setAPRid(i, roomToSteal);
+                    }
+                    sendAssaultParty();
+                    break;
+
+                case WAITING_FOR_GROUP_ARRIVAL:
+                    //gp.setMT_state(MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL);
+                    takeARest();
+                    collectACanvas();
+
+                    for (int i = 0; i < Simul_Par.N_Parties; i++) {
+                        try {
+                            museum.getRooms()[parties[i].getRoom_assigned()].setAssigned(false);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            if(museum.getRooms()[parties[i].getRoom_assigned()].getN_canvas() == 0){
+                                museum.getRooms()[parties[i].getRoom_assigned()].setEmpty(true);
+                            }
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            parties[i].setAP(new ArrayList<>(Simul_Par.K));
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            parties[i].setNext_inLine(0);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                     break;
                 case PRESENTING_THE_REPORT:
-                    gp.setMT_state(MasterThiefStates.PRESENTING_THE_REPORT);
-                    int results = cc_site.sumUpResults();
+                    //gp.setMT_state(MasterThiefStates.PRESENTING_THE_REPORT);
+                    int results = 0;
+                    results = sumUpResults();
                     isOver = true;
-                    c_site.endOfHeist();
-                    GenericIO.writeString("Heist over, collected "+results+" canvas!\n");
-                    gp.setCanvas(results);
-                    gp.printSumUp();
+                    endOfHeist();
+                    GenericIO.writeString("Heist over, collected " + results + " canvas!\n");
+                    //gp.setCanvas(results);
+                    //gp.printSumUp();
             }
+        }
+    }
+
+    private void startOps(){
+        ReturnInt r = null;
+        try {
+            r = cc_site.startOperations();
+        } catch (RemoteException e)
+        { GenericIO.writelnString ("Master thief remote exception on startOperations: " + e.getMessage ());
+            System.exit (1);
+        }
+        MT_state = r.getState_master();
+    }
+
+    private void appraiseSit(){
+        ReturnBool r = null;
+        try {
+            r = cc_site.appraiseSit(isOver());
+        } catch (RemoteException e)
+        { GenericIO.writelnString ("Master thief remote exception on appraiseSit: " + e.getMessage ());
+            System.exit (1);
+        }
+        MT_state = r.getMaster_state();
+
+    }
+
+    private void prepareAssaultParty(){
+        try {
+            c_site.prepareAssaultParty();
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Master thief remote exception on prepareAssaultParty: " + e.getMessage ());
+            System.exit (1);
+        }
+    }
+
+    private void sendAssaultParty(){
+        ReturnInt r = null;
+        try {
+            r = cc_site.sendAssaultParty();
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Master thief remote exception on sendAssaultParty: " + e.getMessage ());
+            System.exit (1);
+        }
+
+        MT_state = r.getState_master();
+    }
+
+    private void takeARest(){
+        ReturnInt r = null;
+        try {
+            r = cc_site.takeARest();
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Master thief remote exception on takeARest: " + e.getMessage ());
+            System.exit (1);
+        }
+        MT_state = r.getState_master();
+    }
+
+    private void collectACanvas() {
+        ReturnInt r = null;
+        try {
+            r = cc_site.collectACanvas();
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Master thief remote exception on collectACanvas: " + e.getMessage ());
+            System.exit (1);
+        }
+        MT_state = r.getState_master();
+    }
+
+    private int sumUpResults(){
+        int r = -1;
+        try {
+            r = cc_site.sumUpResults();
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Master thief remote exception on sumUpResults: " + e.getMessage ());
+            System.exit (1);
+        }
+        return r;
+    }
+
+    private void endOfHeist(){
+        try {
+            c_site.endOfHeist();
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Master thief remote exception on endOfHeist: " + e.getMessage ());
+            System.exit (1);
         }
     }
 }

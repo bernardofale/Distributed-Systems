@@ -4,6 +4,8 @@ import genclass.GenericIO;
 import serverSide.main.Simul_Par;
 import interfaces.*;
 
+import java.rmi.RemoteException;
+
 /**
  * Represents an Ordinary thief thread
  */
@@ -39,7 +41,7 @@ public class OrdinaryThief extends Thread{
     /**
      * Creates an Ordinary thief object and initializes variables/flags
      */
-    public OrdinaryThief(String name, int id, ConcentrationSiteInterface c_site, CollectionSiteInterface cc_site, AssaultPartyInterface[] parties, MuseumInterface museum, GeneralReposInterface gp) {
+    public OrdinaryThief(String name, int id, ConcentrationSiteInterface c_site, CollectionSiteInterface cc_site, AssaultPartyInterface[] parties, MuseumInterface museum, GeneralReposInterface gp) throws RemoteException {
         super(name);
         this.OT_id = id;
         this.c_site = c_site;
@@ -58,7 +60,8 @@ public class OrdinaryThief extends Thread{
         ap_id = -1;
         inParty = false;
         this.gp = gp;
-        gp.setOt_mdj(getOT_id(), getMDj());
+        //gp.setOt_mdj(getOT_id(), getMDj());
+
     }
 
     /**
@@ -181,47 +184,180 @@ public class OrdinaryThief extends Thread{
         while (!isOver()){
             switch(getOT_state()){
                 case CONCENTRATION_SITE :
-                    int ret = c_site.amINeeded();
+                    int ret = 0;
+                    ret = amINeeded();
                     if(ret == 1){
                         setOver(true);
                         break;
                     }
-                    ap_id = cc_site.prepareExcursion();
+                    ap_id = prepareExcursion();
                     my_ap = parties[ap_id];
-                    my_ap.join();
+                    join_ap();
+
                 case CRAWLING_INWARDS:
-                    my_ap.crawlIn();
-                    if(getPosition() == my_ap.getDistance()){
-                        my_ap.next();
-                        setOT_state(OrdinaryThievesStates.AT_A_ROOM);
-                        gp.setOT_states(getOT_id(), OrdinaryThievesStates.AT_A_ROOM);
-                        GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in a room!\n");
+
+                    crawlIn();
+                    try {
+                        if(getPosition() == my_ap.getDistance()){
+                            next();
+                            setOT_state(OrdinaryThievesStates.AT_A_ROOM);
+                            //gp.setOT_states(getOT_id(), OrdinaryThievesStates.AT_A_ROOM);
+                            GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in a room!\n");
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
                 case AT_A_ROOM:
-                    isHoldingCanvas = museum.rollACanvas(getMy_ap().getRoom_assigned());
-                    gp.setOtHasCanvas(getOT_id(), isHoldingCanvas);
-                    my_ap.reverseDirection();
+                    rollACanvas();
+                    //gp.setOtHasCanvas(getOT_id(), isHoldingCanvas);
+                    reverseDirection();
                     break;
+
                 case CRAWLING_OUTWARDS:
-                    my_ap.crawlOut();
-                    if(getPosition() == my_ap.getDistance()){
-                        my_ap.next();
-                        setOT_state(OrdinaryThievesStates.COLLECTION_SITE);
-                        gp.setOT_states(getOT_id(), OrdinaryThievesStates.COLLECTION_SITE);
-                        GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in concentration site!\n");
+                    crawlOut();
+                    try {
+                        if(getPosition() == my_ap.getDistance()){
+                            next();
+                            setOT_state(OrdinaryThievesStates.COLLECTION_SITE);
+                            //gp.setOT_states(getOT_id(), OrdinaryThievesStates.COLLECTION_SITE);
+                            GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in concentration site!\n");
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
+
                 case COLLECTION_SITE:
-                    cc_site.handACanvas();
+                    handACanvas();
                     isHoldingCanvas = false;
-                    gp.setOtHasCanvas(getOT_id(), isHoldingCanvas);
+                    //gp.setOtHasCanvas(getOT_id(), isHoldingCanvas);
                     setPosition(0);
                     setInParty(false);
-                    gp.setIsInParty(getOT_id(), isInParty());
-                    gp.setOT_states(getOT_id(), OrdinaryThievesStates.CONCENTRATION_SITE);
+                    //gp.setIsInParty(getOT_id(), isInParty());
+                    //gp.setOT_states(getOT_id(), OrdinaryThievesStates.CONCENTRATION_SITE);
                     break;
             }
         }
+    }
+
+    private int amINeeded() {
+        ReturnInt r = null;
+
+        try{
+            r = c_site.amINeeded(getOT_id());
+        }catch (RemoteException e)
+        { GenericIO.writelnString ("Ordinary thief " + getOT_id() + " remote exception on amINeeded: " + e.getMessage ());
+            System.exit (1);
+        }
+
+
+        OT_state = r.getOrdinaryThievesStatesVal();
+
+        return r.getIntVal();
+    }
+
+    private int prepareExcursion() {
+        ReturnInt r = null;
+
+        try {
+            r = cc_site.prepareExcursion(getOT_id());
+        } catch (RemoteException e)
+        { GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on prepareExcursion: " + e.getMessage ());
+            System.exit (1);
+        }
+
+
+        OT_state = r.getOrdinaryThievesStatesVal();
+
+        return r.getIntVal();
+    }
+
+    private void join_ap() {
+        ReturnBool[] r = null;
+
+        try {
+            r = my_ap.join(getOT_id(), getMDj());
+        } catch (RemoteException e)
+        { GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on join: " + e.getMessage ());
+            System.exit (1);
+        }
+
+        readyToLeave = r[0].getBooleanVal();
+
+        inParty = r[1].getBooleanVal();
+    }
+
+    private void crawlIn(){
+        ReturnInt r = null;
+        try {
+            r = my_ap.crawlIn(getOT_id());
+        } catch (RemoteException e)
+        { GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on crawl in: " + e.getMessage ());
+            System.exit (1);
+        }
+        position = r.getIntVal();
+    }
+
+    private void next(){
+        try {
+            my_ap.next();
+        } catch (RemoteException e)
+        { GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on next: " + e.getMessage ());
+            System.exit (1);
+        }
+    }
+    private void rollACanvas(){
+
+        ReturnBool r = null;
+        try {
+            r = museum.rollACanvas(getOT_id(), my_ap.getRoom_assigned());
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on rollACanvas: " + e.getMessage ());
+            System.exit (1);
+        }
+
+        isHoldingCanvas = r.getBooleanVal();
+        setOT_state(r.getOrdinaryThievesStatesVal());
+    }
+
+    private void reverseDirection(){
+
+        ReturnBool r = null;
+        try {
+            r = my_ap.reverseDirection(getOT_id());
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on reverseDirection: " + e.getMessage ());
+            System.exit (1);
+        }
+
+        OT_state = r.getOrdinaryThievesStatesVal();
+        readyToLeave = r.getBooleanVal();
+        position = 0;
+
+    }
+
+    private void crawlOut(){
+        ReturnInt r = null;
+
+        try {
+            r = my_ap.crawlOut(getOT_id());
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on crawlOut: " + e.getMessage ());
+            System.exit (1);
+        }
+
+        position = r.getIntVal();
+    }
+
+    private void handACanvas(){
+        ReturnInt r = null;
+        try {
+            r = cc_site.handACanvas(getOT_id(), isHoldingCanvas());
+        } catch (RemoteException e) {
+            GenericIO.writelnString ("Ordinary thief  " + getOT_id() + " remote exception on handACanvas: " + e.getMessage ());
+            System.exit (1);
+        }
+        OT_state = r.getOrdinaryThievesStatesVal();
     }
 }

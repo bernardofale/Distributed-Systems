@@ -1,6 +1,6 @@
-package comm_infra;
+package commInfra;
 
-import entities.OrdinaryThievesStates;
+import clientSide.entities.*;
 
 /**
  * Represents an auxiliary data structure for keeping logging information of the thieves;
