@@ -1,5 +1,6 @@
 package commInfra;
 
+import genclass.GenericIO;
 import serverSide.main.*;
 
 import java.io.Serializable;
@@ -59,11 +60,14 @@ public class Room implements Serializable {
      * Roll a canvas from the room. Set the canvas in the array of canvas as stolen and decrement the number
      * of available canvas
      */
-    public boolean roll(){
+    public synchronized boolean roll(){
         for (Canvas c : getCanvas()) {
             if(!c.isStolen()){
                 c.setStolen(true);
                 n_canvas--;
+                if(getN_canvas() == 0){
+                    setEmpty(true);
+                }
                 return true;
             }
         }
@@ -73,12 +77,15 @@ public class Room implements Serializable {
      * Checks if the room is empty
      * @return a boolean that informs if the current room is empty or not
      */
-    public boolean isEmpty() {
-        return !isEmpty;
+    public synchronized boolean isEmpty() {
+        System.out.println(isEmpty);
+        return isEmpty;
     }
 
-    public void setEmpty(boolean empty) {
+    public synchronized void setEmpty(boolean empty) {
         isEmpty = empty;
+        System.out.println(isEmpty);
+        assert isEmpty;
     }
 
     /**

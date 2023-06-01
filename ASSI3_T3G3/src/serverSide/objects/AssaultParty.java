@@ -39,6 +39,8 @@ public class AssaultParty implements AssaultPartyInterface {
 
     private int nEntities;
 
+    private int full;
+
     /**
      * Creates an assault party object and initialize variables and flags
      * @param id of the Assault party (0 .. N_Parties)
@@ -60,6 +62,7 @@ public class AssaultParty implements AssaultPartyInterface {
         distance = -1;
         this.gp = gp;
         nEntities = 0;
+        full = 0;
     }
 
     /**
@@ -135,7 +138,11 @@ public class AssaultParty implements AssaultPartyInterface {
      * @return a boolean representing the fullness of the party
      */
     public boolean isFull() {
-        return getAP().size() == Simul_Par.K;
+        return full == Simul_Par.K;
+    }
+
+    public void setFull(int f) {
+        full = f;
     }
 
     /**
@@ -313,6 +320,7 @@ public class AssaultParty implements AssaultPartyInterface {
         GenericIO.writelnString("Thief#"+ ot_id +" placed in AP#" + getId());
         AuxOT ot = new AuxOT(ot_id, mdj);
         getAP().add(ot);
+        full++;
         ot.setReadyToLeave(false);
         ot.setInParty(true);
         //gp.setIsInParty(ot_id, ot.isInParty());

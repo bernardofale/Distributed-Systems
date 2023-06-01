@@ -3,6 +3,7 @@ package serverSide.objects;
 import clientSide.entities.*;
 
 import commInfra.Room;
+import genclass.GenericIO;
 import interfaces.GeneralReposInterface;
 import interfaces.MuseumInterface;
 import interfaces.ReturnBool;
@@ -53,7 +54,7 @@ public class Museum implements MuseumInterface {
         this.gp = gp;
         for (int i = 0; i < Simul_Par.N; i++) {
             rooms[i] = new Room(i);
-            //this.gp.setDistance(i, rooms[i].getDistance());
+            GenericIO.writelnInt(rooms[i].getN_canvas());
             //this.gp.setNP(i, rooms[i].getN_canvas());
         }
 
@@ -63,7 +64,7 @@ public class Museum implements MuseumInterface {
      * Gets the all the rooms inside the museum
      * @return an array of type Room
      */
-    public Room[] getRooms() {
+    public synchronized Room[] getRooms() {
         return rooms;
     }
 

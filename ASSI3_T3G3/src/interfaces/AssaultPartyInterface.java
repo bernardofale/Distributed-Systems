@@ -44,4 +44,6 @@ public interface AssaultPartyInterface extends Remote {
      */
 
     public void shutdown () throws RemoteException;
+
+    public void setFull(int f) throws RemoteException;
 }

@@ -77,7 +77,7 @@ public class MasterThief extends Thread{
      */
     public int getRoomToBeStolen() throws RemoteException {
         for (Room r : museum.getRooms()) {
-            if(!r.isAssigned() && r.isEmpty()) return r.getId();
+            if(!r.isAssigned() && !r.isEmpty()) return r.getId();
         }
         return Simul_Par.N - 1;
     }
@@ -114,34 +114,21 @@ public class MasterThief extends Thread{
                     //gp.setMT_state(MasterThiefStates.ASSEMBLING_A_GROUP);
                     prepareAssaultParty();
                     for(int i = 0; i < Simul_Par.N_Parties; i++){
-                        int roomToSteal= 0;
+                        int roomToSteal;
                         try {
                             roomToSteal = getRoomToBeStolen();
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             GenericIO.writeString("Assigning room " + roomToSteal + " to party "+parties[i].getId()+"\n");
+
                         } catch (RemoteException e) {
                             throw new RuntimeException(e);
                         }
-                        int distance = 0;
+
+
+                        int distance;
                         try {
                             distance = museum.getRooms()[roomToSteal].getDistance();
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             museum.getRooms()[roomToSteal].setAssigned(true);
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             parties[i].setRoom_assigned(roomToSteal);
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             parties[i].setDistance(distance);
                         } catch (RemoteException e) {
                             throw new RuntimeException(e);
@@ -159,22 +146,8 @@ public class MasterThief extends Thread{
                     for (int i = 0; i < Simul_Par.N_Parties; i++) {
                         try {
                             museum.getRooms()[parties[i].getRoom_assigned()].setAssigned(false);
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
-                            if(museum.getRooms()[parties[i].getRoom_assigned()].getN_canvas() == 0){
-                                museum.getRooms()[parties[i].getRoom_assigned()].setEmpty(true);
-                            }
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
+                            parties[i].setFull(0);
                             parties[i].setAP(new ArrayList<>(Simul_Par.K));
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             parties[i].setNext_inLine(0);
                         } catch (RemoteException e) {
                             throw new RuntimeException(e);
