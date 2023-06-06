@@ -175,7 +175,7 @@ public class ClientOrdinaryThief {
         { try
         { thieves[i].join ();
         }
-        catch (InterruptedException e) {}
+        catch (InterruptedException ignored) {}
             GenericIO.writelnString ("The ordinary thief " + (i) + " has terminated.");
         }
         GenericIO.writelnString ();

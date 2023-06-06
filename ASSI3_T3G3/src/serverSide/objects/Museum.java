@@ -29,6 +29,8 @@ public class Museum implements MuseumInterface {
 
     private MasterThiefStates master_state;
 
+    private int total_canvas;
+
     /**
      *   Number of entity groups requesting the shutdown.
      */
@@ -50,21 +52,30 @@ public class Museum implements MuseumInterface {
         }
         master_state = null;
         this.nEntities = 0;
+        total_canvas = 0;
         rooms = new Room[Simul_Par.N];
         this.gp = gp;
         for (int i = 0; i < Simul_Par.N; i++) {
             rooms[i] = new Room(i);
-            GenericIO.writelnInt(rooms[i].getN_canvas());
+            total_canvas += rooms[i].getN_canvas();
             //this.gp.setNP(i, rooms[i].getN_canvas());
         }
 
     }
 
     /**
+     * Gets the total number of canvas
+     * @return an array of type Room
+     */
+    public synchronized int getTotal_canvas() throws RemoteException{
+        return total_canvas;
+    }
+
+    /**
      * Gets the all the rooms inside the museum
      * @return an array of type Room
      */
-    public synchronized Room[] getRooms() {
+    public synchronized Room[] getRooms() throws RemoteException{
         return rooms;
     }
 
@@ -103,7 +114,7 @@ public class Museum implements MuseumInterface {
     public synchronized void shutdown ()
     {
         nEntities += 1;
-        if (nEntities >= Simul_Par.M)
+        if (nEntities >= 1)
             ServerMuseum.shutdown();
         notifyAll ();                                        // the master thief may now terminate
     }

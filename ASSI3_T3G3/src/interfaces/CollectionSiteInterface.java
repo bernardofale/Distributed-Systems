@@ -12,7 +12,7 @@ public interface CollectionSiteInterface extends Remote {
 
     ReturnInt takeARest() throws RemoteException;
 
-    ReturnInt collectACanvas() throws RemoteException;
+    ReturnBool collectACanvas(int total_canvas) throws RemoteException;
 
     int sumUpResults() throws RemoteException;
 

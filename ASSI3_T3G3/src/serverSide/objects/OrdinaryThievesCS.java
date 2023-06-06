@@ -92,7 +92,8 @@ public class OrdinaryThievesCS implements ConcentrationSiteInterface {
                 e.printStackTrace();
             }
         }
-        if(isHeistOver()){
+        GenericIO.writelnString(String.valueOf(heistOver));
+        if(heistOver){
             return new ReturnInt(1, OrdinaryThievesStates.CONCENTRATION_SITE);
         }
         GenericIO.writeString("Thief "+ ot_id +" is awake.\n");
@@ -127,7 +128,8 @@ public class OrdinaryThievesCS implements ConcentrationSiteInterface {
      * now return the lock and terminate its operation
      */
     public synchronized void endOfHeist(){
-        setHeistOver(true);
+        heistOver = true;
+        GenericIO.writelnString("heist is over");
         for(int i =0; i < Simul_Par.M - 1 ;i++)
             thieves[i] = 1;
         notifyAll();
@@ -156,7 +158,7 @@ public class OrdinaryThievesCS implements ConcentrationSiteInterface {
     public synchronized void shutdown ()
     {
         nEntities += 1;
-        if (nEntities >= Simul_Par.M)
+        if (nEntities >= 1)
             ServerOrdinaryThievesCS.shutdown();
         notifyAll ();                                        // the master thief may now terminate
     }

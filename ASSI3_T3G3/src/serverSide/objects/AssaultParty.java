@@ -361,7 +361,7 @@ public class AssaultParty implements AssaultPartyInterface {
     public synchronized void shutdown () throws RemoteException
     {
         nEntities += 1;
-        if (nEntities >= Simul_Par.M)
+        if (nEntities >= 1)
             if(getId() == 0)
                 ServerAssaultParty.shutdown();
         notifyAll ();                                        // the master thief may now terminate

@@ -121,7 +121,7 @@ public class GeneralRepo implements GeneralReposInterface {
     public synchronized void shutdown ()
     {
         nEntities += 1;
-        if (nEntities >= Simul_Par.M)
+        if (nEntities >= 1)
             ServerGeneralRepo.shutdown();
     }
 

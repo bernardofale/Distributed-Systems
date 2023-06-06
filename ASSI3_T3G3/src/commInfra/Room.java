@@ -78,13 +78,11 @@ public class Room implements Serializable {
      * @return a boolean that informs if the current room is empty or not
      */
     public synchronized boolean isEmpty() {
-        System.out.println(isEmpty);
         return isEmpty;
     }
 
     public synchronized void setEmpty(boolean empty) {
         isEmpty = empty;
-        System.out.println(isEmpty);
         assert isEmpty;
     }
 

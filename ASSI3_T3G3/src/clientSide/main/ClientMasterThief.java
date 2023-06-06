@@ -169,22 +169,12 @@ public class ClientMasterThief {
         /* waiting for the end of the simulation */
 
         while (master.isAlive ()) {
-            try {
-                CCSStub.endOperation();
-                CSStub.endOperation();
-                APStub[0].endOperation();
-                APStub[1].endOperation();
-                MuseumStub.endOperation();
-
-            } catch (RemoteException e) {
-                GenericIO.writelnString("Barber generator remote exception on BarberShop endOperation: " + e.getMessage());
-                System.exit(1);
-            }
             Thread.yield ();
+            try {
+                master.join();
+            }catch (InterruptedException ignored) {}
         }
-        try {
-            master.join();
-        }catch (InterruptedException e) {}
+
         GenericIO.writelnString ("The Master thief has terminated.");
         GenericIO.writelnString();
 

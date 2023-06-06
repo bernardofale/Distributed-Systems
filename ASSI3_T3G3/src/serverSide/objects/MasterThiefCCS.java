@@ -175,6 +175,7 @@ public class MasterThiefCCS implements CollectionSiteInterface {
             GenericIO.writeString("Last thief "+ thief_id +" waking up master thief, parties are assembled!\n");
             notifyAll();
         }
+
         while(!parties[idx].isOn()){
             try {
                 wait();
@@ -214,7 +215,7 @@ public class MasterThiefCCS implements CollectionSiteInterface {
      * Master thief "collects" the canvas and re-initializes variables and flags, such as the parties,
      * for the next iteration of the heist. The state should change to DECIDING_WHAT_TO_DO
      */
-    public synchronized ReturnInt collectACanvas(){
+    public synchronized ReturnBool collectACanvas(int total_canvas){
         GenericIO.writeString("Collecting...");
 
         partiesReady = false;
@@ -223,10 +224,14 @@ public class MasterThiefCCS implements CollectionSiteInterface {
         }
         master_state = MasterThiefStates.DECIDING_WHAT_TO_DO;
         GenericIO.writeString("Collected " + collected_canvas + " canvas!\n");
+        if(collected_canvas == total_canvas){
+            master_state = MasterThiefStates.PRESENTING_THE_REPORT;
+            return new ReturnBool(true, master_state);
+        }
         collect = true;
         notifyAll();
 
-        return new ReturnInt(0, master_state);
+        return new ReturnBool(false, master_state);
     }
 
     /**
@@ -255,6 +260,7 @@ public class MasterThiefCCS implements CollectionSiteInterface {
                 e.printStackTrace();
             }
         }
+
         thievesStates[thief_id] = OrdinaryThievesStates.CONCENTRATION_SITE;
 
         return new ReturnInt(0, thievesStates[thief_id]);
@@ -283,7 +289,7 @@ public class MasterThiefCCS implements CollectionSiteInterface {
     public synchronized void shutdown ()
     {
         nEntities += 1;
-        if (nEntities >= Simul_Par.M)
+        if (nEntities >= 1)
             ServerMasterThiefCCS.shutdown();
         notifyAll ();                                        // the master thief may now terminate
     }

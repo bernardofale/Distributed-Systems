@@ -29,6 +29,10 @@ public class MasterThief extends Thread{
 
     private GeneralReposInterface gp;
 
+    private int total_canvas;
+
+    private boolean finish;
+
     /**
      * Creates a master thief object and initializes variables and flags needed for the operation of the thread
      */
@@ -40,18 +44,22 @@ public class MasterThief extends Thread{
         this.museum = museum;
         isOver = false;
         this.parties = new AssaultPartyInterface[Simul_Par.N_Parties];
-        for (int i = 0; i < Simul_Par.N_Parties; i++) {
-            this.parties[i] = parties[i];
-        }
+        System.arraycopy(parties, 0, this.parties, 0, Simul_Par.N_Parties);
         this.id = id;
         this.gp = gp;
+        try {
+            total_canvas = museum.getTotal_canvas();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        finish = false;
     }
 
     /**
      * Checks if the heist is over
      * @return a boolean that represents the state of the heist
      */
-    public boolean isOver() {
+    public synchronized boolean isOver() {
         return isOver;
     }
 
@@ -86,7 +94,7 @@ public class MasterThief extends Thread{
      * Function that complements isOver() that checks if all the rooms in the museum are empty
      * @return a boolean that represents the emptiness of the museum
      */
-    public boolean isHeistOver() throws RemoteException {
+    public synchronized boolean isHeistOver() throws RemoteException {
         for (Room r : museum.getRooms()) {
             if(r.isEmpty()) {
                 return false;
@@ -99,7 +107,7 @@ public class MasterThief extends Thread{
      */
     @Override
     public void run () {
-        while(!isOver()){
+        while(!finish){
             switch(getMT_state()){
                 case PLANNING_THE_HEIST :
                     startOps();
@@ -117,7 +125,6 @@ public class MasterThief extends Thread{
                         int roomToSteal;
                         try {
                             roomToSteal = getRoomToBeStolen();
-                            GenericIO.writeString("Assigning room " + roomToSteal + " to party "+parties[i].getId()+"\n");
 
                         } catch (RemoteException e) {
                             throw new RuntimeException(e);
@@ -158,11 +165,12 @@ public class MasterThief extends Thread{
                     //gp.setMT_state(MasterThiefStates.PRESENTING_THE_REPORT);
                     int results = 0;
                     results = sumUpResults();
-                    isOver = true;
+                    finish = true;
                     endOfHeist();
                     GenericIO.writeString("Heist over, collected " + results + " canvas!\n");
                     //gp.setCanvas(results);
                     //gp.printSumUp();
+                    break;
             }
         }
     }
@@ -181,7 +189,7 @@ public class MasterThief extends Thread{
     private void appraiseSit(){
         ReturnBool r = null;
         try {
-            r = cc_site.appraiseSit(isOver());
+            r = cc_site.appraiseSit(isOver);
         } catch (RemoteException e)
         { GenericIO.writelnString ("Master thief remote exception on appraiseSit: " + e.getMessage ());
             System.exit (1);
@@ -223,14 +231,15 @@ public class MasterThief extends Thread{
     }
 
     private void collectACanvas() {
-        ReturnInt r = null;
+        ReturnBool r = null;
         try {
-            r = cc_site.collectACanvas();
+            r = cc_site.collectACanvas(total_canvas);
         } catch (RemoteException e) {
             GenericIO.writelnString ("Master thief remote exception on collectACanvas: " + e.getMessage ());
             System.exit (1);
         }
-        MT_state = r.getState_master();
+        MT_state = r.getMaster_state();
+        isOver = r.getBooleanVal();
     }
 
     private int sumUpResults(){

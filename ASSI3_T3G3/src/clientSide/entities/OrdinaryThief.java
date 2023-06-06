@@ -47,9 +47,7 @@ public class OrdinaryThief extends Thread{
         this.c_site = c_site;
         this.OT_state = OrdinaryThievesStates.CONCENTRATION_SITE;
         this.parties = new AssaultPartyInterface[Simul_Par.N_Parties];
-        for (int i = 0; i < Simul_Par.N_Parties; i++) {
-            this.parties[i] = parties[i];
-        }
+        System.arraycopy(parties, 0, this.parties, 0, Simul_Par.N_Parties);
         this.cc_site = cc_site;
         this.museum = museum;
         isHoldingCanvas = false;
@@ -186,8 +184,10 @@ public class OrdinaryThief extends Thread{
                 case CONCENTRATION_SITE :
                     int ret = 0;
                     ret = amINeeded();
+                    GenericIO.writelnInt(ret);
                     if(ret == 1){
-                        setOver(true);
+                        GenericIO.writelnString("it's over");
+                        isOver = true;
                         break;
                     }
                     ap_id = prepareExcursion();
@@ -202,7 +202,7 @@ public class OrdinaryThief extends Thread{
                             next();
                             setOT_state(OrdinaryThievesStates.AT_A_ROOM);
                             //gp.setOT_states(getOT_id(), OrdinaryThievesStates.AT_A_ROOM);
-                            GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in a room!\n");
+                            //GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in a room!\n");
                         }
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
@@ -221,7 +221,7 @@ public class OrdinaryThief extends Thread{
                             next();
                             setOT_state(OrdinaryThievesStates.COLLECTION_SITE);
                             //gp.setOT_states(getOT_id(), OrdinaryThievesStates.COLLECTION_SITE);
-                            GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in concentration site!\n");
+                            //GenericIO.writeString("Position -> "+getPosition()+" Thief "+getOT_id()+" in concentration site!\n");
                         }
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
@@ -239,6 +239,7 @@ public class OrdinaryThief extends Thread{
                     break;
             }
         }
+        GenericIO.writelnString("ACABEI");
     }
 
     private int amINeeded() {

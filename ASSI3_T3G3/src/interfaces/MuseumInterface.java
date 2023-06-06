@@ -19,4 +19,6 @@ public interface MuseumInterface extends Remote {
      */
 
     public void shutdown () throws RemoteException;
+
+    int getTotal_canvas() throws RemoteException;
 }
