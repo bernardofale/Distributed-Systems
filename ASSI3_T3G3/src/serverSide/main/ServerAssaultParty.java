@@ -57,7 +57,7 @@ public class ServerAssaultParty {
         { GenericIO.writelnString ("args[0] is not a valid port number!");
             System.exit (1);
         }
-        if(portNumb == 22010){
+        if(portNumb == 22326){
             ap_id = 0;
         }else{
             ap_id = 1;

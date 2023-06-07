@@ -1,1 +1,1 @@
-java clientSide.main.ClientOrdinaryThief l040101-ws08.ua.pt 22000 logger
+java clientSide.main.ClientOrdinaryThief l040101-ws01.ua.pt 22320 logger

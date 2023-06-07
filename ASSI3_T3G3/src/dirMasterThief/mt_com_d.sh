@@ -1,1 +1,1 @@
-java clientSide.main.ClientMasterThief l040101-ws08.ua.pt 22000
+java clientSide.main.ClientMasterThief l040101-ws01.ua.pt 22320

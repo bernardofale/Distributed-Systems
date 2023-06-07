@@ -6,30 +6,32 @@ echo "Distributing intermediate code to the different execution environments."
 
 echo "RMI registry"
 rm -rf dirRMIRegistry/interfaces dirRMIRegistry/commInfra
-mkdir -p dirRMIRegistry/interfaces dirRMIRegistry/commInfra
+mkdir -p dirRMIRegistry/interfaces dirRMIRegistry/commInfra dirRMIRegistry/clientSide/entities
 cp interfaces/*.class dirRMIRegistry/interfaces
 cp commInfra/*.class dirRMIRegistry/commInfra
+cp clientSide/entities/*.class dirRMIRegistry/clientSide/entities
 
 echo "Register Remote Objects"
 rm -rf dirRegistry/serverSide dirRegistry/interfaces
 mkdir -p dirRegistry/serverSide dirRegistry/serverSide/main dirRegistry/serverSide/objects dirRegistry/interfaces
-cp serverSide/main/ServerHeistProjRegisterRemoteObject.class dirRegistry/serverSide/main
+cp serverSide/main/ServerRegisterRemoteObject.class dirRegistry/serverSide/main
 cp serverSide/objects/RegisterRemoteObject.class dirRegistry/serverSide/objects
 cp interfaces/Register.class dirRegistry/interfaces
 
 echo "General Repository of Information"
-rm -rf dirGeneralRepos/serverSide dirGeneralRepos/clientSide dirGeneralRepos/interfaces
-mkdir -p dirGeneralRepos/serverSide dirGeneralRepos/serverSide/main dirGeneralRepos/serverSide/objects dirGeneralRepos/interfaces dirGeneralRepos/clientSide dirGeneralRepos/clientSide/entities
-cp serverSide/main/Simul_Par.class serverSide/main/ServerHeistProjGeneralRepos.class dirGeneralRepos/serverSide/main
-cp serverSide/objects/GeneralRepos.class dirGeneralRepos/serverSide/objects
+rm -rf dirGeneralRepos/serverSide dirGeneralRepos/clientSide dirGeneralRepos/interfaces dirGeneralRepos/commInfra
+mkdir -p dirGeneralRepos/serverSide dirGeneralRepos/serverSide/main dirGeneralRepos/serverSide/objects dirGeneralRepos/interfaces dirGeneralRepos/clientSide dirGeneralRepos/clientSide/entities dirGeneralRepos/commInfra
+cp serverSide/main/Simul_Par.class serverSide/main/ServerGeneralRepo.class dirGeneralRepos/serverSide/main
+cp serverSide/objects/GeneralRepo.class dirGeneralRepos/serverSide/objects
 cp interfaces/Register.class interfaces/GeneralReposInterface.class dirGeneralRepos/interfaces
 cp clientSide/entities/MasterThiefStates.class clientSide/entities/OrdinaryThievesStates.class dirGeneralRepos/clientSide/entities
+cp commInfra/*.class dirGeneralRepos/commInfra
 
 echo "Thiefs Concentration Site"
 rm -rf dirConcentrationSite/serverSide dirConcentrationSite/clientSide dirConcentrationSite/interfaces dirConcentrationSite/commInfra
 mkdir -p dirConcentrationSite/serverSide dirConcentrationSite/serverSide/main dirConcentrationSite/serverSide/objects dirConcentrationSite/interfaces dirConcentrationSite/clientSide dirConcentrationSite/clientSide/entities dirConcentrationSite/commInfra
-cp serverSide/main/Simul_Par.class serverSide/main/ServerHeistProjThiefs_Concentration_Site.class dirConcentrationSite/serverSide/main
-cp serverSide/objects/Thiefs_Concentration_Site.class dirConcentrationSite/serverSide/objects
+cp serverSide/main/Simul_Par.class serverSide/main/ServerOrdinaryThievesCS.class dirConcentrationSite/serverSide/main
+cp serverSide/objects/OrdinaryThievesCS.class dirConcentrationSite/serverSide/objects
 cp interfaces/*.class dirConcentrationSite/interfaces
 cp clientSide/entities/MasterThiefStates.class clientSide/entities/OrdinaryThievesStates.class dirConcentrationSite/clientSide/entities
 cp commInfra/*.class dirConcentrationSite/commInfra
@@ -55,8 +57,8 @@ cp commInfra/*.class dirAssaultParty1/commInfra
 echo "Master Control Collection Site"
 rm -rf dirCollectionSite/serverSide dirCollectionSite/clientSide dirCollectionSite/interfaces dirCollectionSite/commInfra
 mkdir -p dirCollectionSite/serverSide dirCollectionSite/serverSide/main dirCollectionSite/serverSide/objects dirCollectionSite/interfaces dirCollectionSite/clientSide dirCollectionSite/clientSide/entities dirCollectionSite/commInfra
-cp serverSide/main/Simul_Par.class serverSide/main/ServerHeistProjMaster_Control_Collection_Site.class dirCollectionSite/serverSide/main
-cp serverSide/objects/Master_Control_Collection_Site.class dirCollectionSite/serverSide/objects
+cp serverSide/main/Simul_Par.class serverSide/main/ServerMasterThiefCCS.class dirCollectionSite/serverSide/main
+cp serverSide/objects/MasterThiefCCS.class dirCollectionSite/serverSide/objects
 cp interfaces/*.class dirCollectionSite/interfaces
 cp clientSide/entities/MasterThiefStates.class clientSide/entities/OrdinaryThievesStates.class dirCollectionSite/clientSide/entities
 cp commInfra/*.class dirCollectionSite/commInfra
@@ -64,28 +66,29 @@ cp commInfra/*.class dirCollectionSite/commInfra
 echo "Museum"
 rm -rf dirMuseum/serverSide dirMuseum/clientSide dirMuseum/interfaces dirMuseum/commInfra
 mkdir -p dirMuseum/serverSide dirMuseum/serverSide/main dirMuseum/serverSide/objects dirMuseum/interfaces dirMuseum/clientSide dirMuseum/clientSide/entities dirMuseum/commInfra
-cp serverSide/main/Simul_Par.class serverSide/main/ServerHeistProjMuseum.class dirMuseum/serverSide/main
+cp serverSide/main/Simul_Par.class serverSide/main/ServerMuseum.class dirMuseum/serverSide/main
 cp serverSide/objects/Museum.class dirMuseum/serverSide/objects
 cp interfaces/*.class dirMuseum/interfaces
-cp clientSide/entities/MasterThiefStates.class clientSide/entities/OrdinaryThievesStates.class dirMuseum/clientSide/entities
+cp clientSide/entities/*.class dirMuseum/clientSide/entities
 cp commInfra/*.class dirMuseum/commInfra
 
 echo "Master"
-rm -rf dirMasterThief/serverSide dirMasterThief/clientSide dirMasterThief/interfaces
-mkdir -p dirMasterThief/serverSide dirMasterThief/serverSide/main dirMasterThief/clientSide dirMasterThief/clientSide/main dirMasterThief/clientSide/entities dirMasterThief/interfaces
+rm -rf dirMasterThief/serverSide dirMasterThief/clientSide dirMasterThief/interfaces dirMasterThief/commInfra
+mkdir -p dirMasterThief/serverSide dirMasterThief/serverSide/main dirMasterThief/clientSide dirMasterThief/clientSide/main dirMasterThief/clientSide/entities dirMasterThief/interfaces dirMasterThief/commInfra
 cp serverSide/main/Simul_Par.class dirMasterThief/serverSide/main
-cp clientSide/main/ClientHeistMuseumMaster.class dirMasterThief/clientSide/main
-cp clientSide/entities/Master.class clientSide/entities/MasterThiefStates.class dirMasterThief/clientSide/entities
-cp interfaces/Master_Control_Collection_SiteInterface.class interfaces/Thiefs_Concentration_SiteInterface.class interfaces/GeneralReposInterface.class interfaces/ReturnBoolean.class interfaces/ReturnInt.class interfaces/ReturnIntArray.class dirMasterThief/interfaces
+cp clientSide/main/ClientMasterThief.class dirMasterThief/clientSide/main
+cp clientSide/entities/*.class dirMasterThief/clientSide/entities
+cp interfaces/*.class dirMasterThief/interfaces
+cp commInfra/*.class dirMasterThief/commInfra
 
 echo "Ordinaries"
 rm -rf dirOrdinaryThieves/serverSide dirOrdinaryThieves/clientSide dirOrdinaryThieves/interfaces dirOrdinaryThieves/commInfra
 mkdir -p dirOrdinaryThieves/serverSide dirOrdinaryThieves/serverSide/main dirOrdinaryThieves/clientSide dirOrdinaryThieves/clientSide/main dirOrdinaryThieves/clientSide/entities dirOrdinaryThieves/interfaces dirOrdinaryThieves/commInfra
 cp serverSide/main/Simul_Par.class dirOrdinaryThieves/serverSide/main
-cp clientSide/main/ClientHeistMuseumOrdinary.class dirOrdinaryThieves/clientSide/main
-cp clientSide/entities/Ordinary.class clientSide/entities/OrdinaryThievesStates.class dirOrdinaryThieves/clientSide/entities
-cp interfaces/Master_Control_Collection_SiteInterface.class interfaces/Thiefs_Concentration_SiteInterface.class interfaces/MuseumInterface.class interfaces/AssaultPartyInterface.class interfaces/GeneralReposInterface.class interfaces/ReturnBoolean.class interfaces/ReturnInt.class interfaces/ReturnIntArray.class dirOrdinaryThieves/interfaces
-cp commInfra/MemException.class dirOrdinaryThieves/commInfra
+cp clientSide/main/ClientOrdinaryThief.class dirOrdinaryThieves/clientSide/main
+cp clientSide/entities/*.class dirOrdinaryThieves/clientSide/entities
+cp interfaces/*.class dirOrdinaryThieves/interfaces
+cp commInfra/*.class dirOrdinaryThieves/commInfra
 
 echo "Compressing execution environments."
 
